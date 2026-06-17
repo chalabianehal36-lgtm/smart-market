@@ -104,10 +104,14 @@ php -S localhost:8000
 
 ## 👩‍💻 Auteur
 
-**Votre Nom** — Étudiante en Informatique  
-📧 votre.email@example.com  
-🔗 [LinkedIn](https://linkedin.com)
+**Nehal Chalabia** — Étudiante en Informatique  
 
+## Contact
+📧 Email: chalabianehal36@gmail.com 
+
+🌐 GitHub: https://github.com/chalabianehal36-lgtm
+
+🚀 Project: https://github.com/chalabianehal36-lgtm/Smartmarket
 ---
 
 © 2026 Smart Market | Projet Informatique
