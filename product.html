@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Détails Produit - Smart Market</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --c1: #3b82f6;
+      --c2: #10b981;
+      --bg: #f0f9ff;
+      --bg2: #e0f2fe;
+      --surface: rgba(255,255,255,0.7);
+      --surface2: rgba(255,255,255,0.4);
+      --text: #0f172a;
+      --text2: #475569;
+      --border: rgba(255,255,255,0.5);
+      --shadow: 0 8px 32px rgba(59,130,246,0.12);
+      --radius: 20px;
+    }
+    body.dark {
+      --bg: #0a0f1e;
+      --bg2: #0d1526;
+      --surface: rgba(15,23,42,0.85);
+      --surface2: rgba(30,41,59,0.7);
+      --text: #f1f5f9;
+      --text2: #94a3b8;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg2), var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.4s, color 0.4s;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 32px;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: background 0.4s;
+    }
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-btn {
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-btn:hover {
+      background: var(--surface);
+      border-color: var(--c1);
+      color: var(--c1);
+    }
+    .cart-btn {
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      color: white !important;
+      border-color: transparent !important;
+      font-weight: 600;
+    }
+    .cart-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(59,130,246,0.35);
+      color: white !important;
+    }
+    select.nav-btn {
+      appearance: none;
+      padding-right: 18px;
+      cursor: pointer;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 8px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+    }
+    .hamburger span {
+      display: block; width: 20px; height: 2px;
+      background: var(--text); border-radius: 2px;
+      transition: 0.3s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0; right: 0;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 12px;
+      max-height: calc(100vh - 64px);
+      overflow-y: auto;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu .nav-btn { justify-content: center; text-align: center; }
+    .mobile-menu-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+    }
+    .mobile-menu-row .nav-btn { width: 100%; justify-content: center; }
+
+    /* Auth mobile */
+    #authAreaMobile { width: 100%; display: flex; justify-content: center; }
+    #authAreaMobile .nav-btn { width: 100%; justify-content: center; }
+    #authAreaMobile .user-menu { width: 100%; position: relative; }
+    #authAreaMobile .avatar-circle {
+      width: 100%; border-radius: 50px; height: 38px;
+      font-size: 14px; gap: 8px; justify-content: center;
+      border: 1.5px solid var(--border);
+    }
+    #authAreaMobile .dropdown {
+      position: absolute; bottom: 46px; top: auto;
+      right: 0; left: 0; min-width: unset; width: 100%;
+    }
+
+    /* Avatar / Dropdown */
+    .user-menu { position: relative; }
+    .avatar-circle {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      color: white; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px; cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.5); flex-shrink: 0;
+    }
+    .dropdown {
+      position: absolute; top: 46px; right: 0;
+      background: var(--surface); backdrop-filter: blur(20px);
+      border: 1.5px solid var(--border); padding: 12px;
+      border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      min-width: 160px; z-index: 9999;
+    }
+    .dropdown p {
+      padding: 4px 8px 8px; font-weight: 600; font-size: 14px;
+      color: var(--text); border-bottom: 1px solid var(--border); margin-bottom: 6px;
+    }
+    .dropdown button {
+      width: 100%; padding: 9px 12px; border: none; border-radius: 10px;
+      background: transparent; color: var(--text); cursor: pointer;
+      text-align: left; font-size: 13px; font-family: 'Inter', sans-serif;
+      font-weight: 500; transition: 0.2s; display: flex; align-items: center; gap: 8px;
+    }
+    .dropdown button:hover { background: rgba(59,130,246,0.1); color: var(--c1); }
+    .hidden { display: none !important; }
+
+    /* ===== BREADCRUMB ===== */
+    .breadcrumb {
+      padding: 20px 32px 0;
+      font-size: 13px;
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .breadcrumb a {
+      color: var(--c1);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* ===== PRODUCT LAYOUT ===== */
+    .product-page {
+      max-width: 1100px;
+      margin: 24px auto 60px;
+      padding: 0 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ===== IMAGE SECTION ===== */
+    .image-section {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .image-section img {
+      width: 100%;
+      height: 420px;
+      object-fit: contain;
+      display: block;
+      background: var(--surface2);
+      transition: transform 0.4s;
+      padding: 16px;
+    }
+    .image-section:hover img { transform: scale(1.04); }
+    .product-badge {
+      position: absolute;
+      top: 16px; left: 16px;
+      background: linear-gradient(135deg, #ef4444, #f97316);
+      color: white;
+      padding: 5px 14px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===== INFO SECTION ===== */
+    .info-section {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .info-section h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .product-price {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Stars */
+    .stars-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .stars-row span {
+      font-size: 24px;
+      color: #d1d5db;
+      cursor: pointer;
+      transition: color 0.2s, transform 0.15s;
+      line-height: 1;
+    }
+    .stars-row span:hover,
+    .stars-row span.active { color: #f59e0b; }
+    .stars-row span:hover { transform: scale(1.2); }
+
+    /* Stock */
+    .stock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: var(--c2);
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      width: fit-content;
+    }
+
+    /* Description */
+    .product-desc {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text2);
+      padding: 16px;
+      background: var(--surface2);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      border-radius: 1px;
+    }
+
+    /* Color options */
+    .option-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .color-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .color-options input[type="radio"] { display: none; }
+    .color-options label {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2.5px solid transparent;
+      transition: 0.25s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .color-options input[type="radio"]:checked + label {
+      border-color: var(--c1);
+      transform: scale(1.2);
+      box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+    }
+
+    /* Quantity + Add to cart */
+    .actions-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .qty-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1.5px solid var(--border);
+      border-radius: 50px;
+      overflow: hidden;
+      background: var(--surface2);
+    }
+    .qty-btn {
+      width: 36px; height: 38px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 18px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .qty-btn:hover { background: rgba(59,130,246,0.1); color: var(--c1); }
+    #quantityInput {
+      width: 48px; height: 38px;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      color: var(--text);
+      outline: none;
+    }
+    /* remove arrows */
+    #quantityInput::-webkit-outer-spin-button,
+    #quantityInput::-webkit-inner-spin-button { -webkit-appearance: none; }
+    #quantityInput[type=number] { -moz-appearance: textfield; }
+
+    #addCartBtn {
+      flex: 1;
+      padding: 11px 24px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: 0.25s;
+      box-shadow: 0 8px 24px rgba(59,130,246,0.3);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    #addCartBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(59,130,246,0.4);
+    }
+    #addCartBtn:active { transform: scale(0.98); }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: #0f172a;
+      color: rgba(255,255,255,0.55);
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 13px;
+    }
+    .footer strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+
+    /* ===== TOAST ===== */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: linear-gradient(135deg, var(--c1), var(--c2));
+      color: white; padding: 12px 24px; border-radius: 50px;
+      font-size: 14px; font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 9999;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      font-family: 'Inter', sans-serif; white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (min-width: 769px) {
+      .hamburger { display: none !important; }
+      .mobile-menu { display: none !important; }
+    }
+    @media (max-width: 900px) {
+      .product-page { grid-template-columns: 1fr; padding: 0 16px; }
+      .image-section img { height: 300px; }
+    }
+    @media (max-width: 768px) {
+      .navbar { padding: 0 16px; }
+      .navbar .search-box,
+      .navbar #navHome,
+      .navbar #navProducts,
+      .navbar #authArea,
+      .navbar #langSwitcher,
+      .navbar .dark-toggle { display: none !important; }
+      .navbar .cart-btn { display: flex !important; }
+      .hamburger { display: flex !important; }
+      .breadcrumb { padding: 16px 16px 0; }
+    }
+    @media (max-width: 480px) {
+      .info-section { padding: 20px; }
+      .actions-row { flex-direction: column; align-items: stretch; }
+      .qty-wrap { justify-content: center; }
+      #addCartBtn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <a href="index.php" class="logo">Smart Market</a>
+  <div class="nav-right">
+    <a href="index.php" class="nav-btn" id="navHome">Accueil</a>
+    <a href="products.html" class="nav-btn" id="navProducts">Produits</a>
+    <div id="authArea"></div>
+    <select id="langSwitcher" class="nav-btn" onchange="changeLanguage()">
+      <option value="fr">🇫🇷 FR</option>
+      <option value="en">🇬🇧 EN</option>
+      <option value="ar">🇩🇿 AR</option>
+    </select>
+    <button onclick="toggleDarkMode()" class="nav-btn dark-toggle">🌙</button>
+    <div class="nav-btn cart-btn" onclick="window.location.href='cart.html'">🛒 <span id="cartCount">0</span></div>
+    <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-row">
+    <a href="index.php" class="nav-btn" id="navHomeMobile">🏠 Accueil</a>
+    <a href="products.html" class="nav-btn" id="navProductsMobile">📦 Produits</a>
+  </div>
+  <div class="mobile-menu-row">
+    <button onclick="toggleDarkMode()" class="nav-btn">🌙 Mode</button>
+    <select id="langSwitcherMobile" class="nav-btn" onchange="changeLangMobile()">
+      <option value="fr">🇫🇷 FR</option>
+      <option value="en">🇬🇧 EN</option>
+      <option value="ar">🇩🇿 AR</option>
+    </select>
+  </div>
+  <div class="mobile-menu-row">
+    <div id="authAreaMobile"></div>
+    <div class="nav-btn" onclick="window.location.href='cart.html'" style="justify-content:center;">
+      🛒 <span id="cartCountMobile">0</span>
+    </div>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="index.php" id="bcHome">Accueil</a>
+  <span>›</span>
+  <a href="products.html" id="bcProducts">Produits</a>
+  <span>›</span>
+  <span id="bcCurrent">Produit</span>
+</div>
+
+<!-- PRODUCT PAGE -->
+<div class="product-page">
+
+  <!-- LEFT: Image -->
+  <div class="image-section">
+    <div class="product-badge">NEW</div>
+    <img id="productImg" src="https://via.placeholder.com/500x420" alt="Produit">
+  </div>
+
+  <!-- RIGHT: Info -->
+  <div class="info-section">
+    <h1 id="productName">Chargement...</h1>
+
+    <div class="stars-row" id="ratingStars">
+      <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+    </div>
+
+    <p class="product-price" id="productPrice">— DA</p>
+
+    <div class="stock-badge" id="stockBadge">✔ Disponible</div>
+
+    <div class="divider"></div>
+
+    <p class="product-desc" id="productDesc"></p>
+
+    <!-- Colors -->
+    <div id="colorBlock" style="display:none;">
+      <p class="option-label" id="colorLabel">Couleur</p>
+      <div class="color-options" id="colorSelect"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Quantity + Add -->
+    <div class="actions-row">
+      <div class="qty-wrap">
+        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+        <input type="number" id="quantityInput" value="1" min="1">
+        <button class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+      <button id="addCartBtn">🛒 Ajouter au panier</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">© 2026 <strong>Smart Market</strong> | Computer Science Project</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+/* ===== TRANSLATIONS ===== */
+const translations = {
+  fr: {
+    navHome:"Accueil", navProducts:"Produits", navLogin:"Connexion",
+    profileBtn:"👤 Profil", logoutBtn:"🚪 Déconnexion",
+    back:"← Retour aux produits", cartLabel:"🛒 Panier",
+    qty:"Quantité", addCart:"🛒 Ajouter au panier",
+    desc:"Description", stock:"✔ Disponible", added:"ajouté au panier",
+    colorLabel:"Couleur", notFound:"Produit introuvable !",
+    bcHome:"Accueil", bcProducts:"Produits"
+  },
+  en: {
+    navHome:"Home", navProducts:"Products", navLogin:"Login",
+    profileBtn:"👤 Profile", logoutBtn:"🚪 Logout",
+    back:"← Back to products", cartLabel:"🛒 Cart",
+    qty:"Quantity", addCart:"🛒 Add to Cart",
+    desc:"Description", stock:"✔ Available", added:"added to cart",
+    colorLabel:"Color", notFound:"Product not found!",
+    bcHome:"Home", bcProducts:"Products"
+  },
+  ar: {
+    navHome:"الرئيسية", navProducts:"المنتجات", navLogin:"تسجيل الدخول",
+    profileBtn:"👤 الملف الشخصي", logoutBtn:"🚪 تسجيل الخروج",
+    back:"← العودة للمنتجات", cartLabel:"🛒 السلة",
+    qty:"الكمية", addCart:"🛒 أضف إلى السلة",
+    desc:"الوصف", stock:"✔ متوفر", added:"تمت إضافته إلى السلة",
+    colorLabel:"اللون", notFound:"المنتج غير موجود!",
+    bcHome:"الرئيسية", bcProducts:"المنتجات"
+  }
+};
+
+const translatedNames = {
+  "Ordinateur Portable":{en:"Laptop",ar:"حاسوب محمول"},
+  "Casque Audio":{en:"Headphones",ar:"سماعات"},
+  "Smartphone":{en:"Smartphone",ar:"هاتف ذكي"},
+  "Montre Intelligente":{en:"Smart Watch",ar:"ساعة ذكية"},
+  "Smart Watch":{en:"Smart Watch",ar:"ساعة ذكية"},
+  "Tablette":{en:"Tablet",ar:"جهاز لوحي"},
+  "Écouteurs sans fil":{en:"Wireless Earbuds",ar:"سماعات لاسلكية"},
+  "Clé USB":{en:"USB Flash Drive",ar:"فلاش USB"},
+  "Disque dur externe":{en:"External Hard Drive",ar:"قرص صلب خارجي"},
+  "Projecteur":{en:"Projector",ar:"بروجكتور"},
+  "Imprimante":{en:"Printer",ar:"طابعة"},
+  "Clavier Gaming":{en:"Gaming Keyboard",ar:"لوحة مفاتيح ألعاب"},
+  "Souris Sans Fil":{en:"Wireless Mouse",ar:"فأرة لاسلكية"},
+  "Écran PC":{en:"Monitor",ar:"شاشة"},
+  "Webcam HD":{en:"HD Webcam",ar:"كاميرا ويب"},
+  "T-shirt":{en:"T-shirt",ar:"قميص"},
+  "Robe":{en:"Dress",ar:"فستان"},
+  "Chaussures":{en:"Shoes",ar:"أحذية"},
+  "Jupe":{en:"Skirt",ar:"تنورة"},
+  "Veste":{en:"Jacket",ar:"سترة"},
+  "Casquette":{en:"Cap",ar:"قبعة"},
+  "Lunettes de soleil":{en:"Sunglasses",ar:"نظارات شمسية"},
+  "Sac à dos":{en:"Backpack",ar:"حقيبة ظهر"},
+  "Ceinture":{en:"Belt",ar:"حزام"},
+  "Pantalon":{en:"Pants",ar:"بنطال"},
+  "Montre Classique":{en:"Classic Watch",ar:"ساعة كلاسيكية"},
+  "Pull Hiver":{en:"Winter Sweater",ar:"سترة شتوية"},
+  "Sandales":{en:"Sandals",ar:"صنادل"},
+  "Sac à main":{en:"Handbag",ar:"حقيبة يد"},
+  "Chaise":{en:"Chair",ar:"كرسي"},
+  "Table":{en:"Table",ar:"طاولة"},
+  "Lampe":{en:"Lamp",ar:"مصباح"},
+  "Canapé":{en:"Sofa",ar:"أريكة"},
+  "Commode":{en:"Dresser",ar:"خزانة"},
+  "Bibliothèque":{en:"Bookshelf",ar:"مكتبة"},
+  "Tapis":{en:"Carpet",ar:"سجاد"},
+  "Rideaux":{en:"Curtains",ar:"ستائر"},
+  "Miroir":{en:"Mirror",ar:"مرآة"},
+  "Horloge murale":{en:"Wall Clock",ar:"ساعة حائط"},
+  "Lit Double":{en:"Double Bed",ar:"سرير مزدوج"},
+  "Oreiller":{en:"Pillow",ar:"وسادة"},
+  "Ventilateur":{en:"Fan",ar:"مروحة"},
+  "Climatiseur":{en:"Air Conditioner",ar:"مكيف"},
+  "Miel Naturel":{en:"Natural Honey",ar:"عسل طبيعي"},
+  "Huile d'olive":{en:"Olive Oil",ar:"زيت زيتون"},
+  "Fromage artisanal":{en:"Artisan Cheese",ar:"جبن تقليدي"},
+  "Confiture maison":{en:"Homemade Jam",ar:"مربى منزلي"},
+  "Yaourt local":{en:"Local Yogurt",ar:"زبادي محلي"},
+  "Pain artisanal":{en:"Artisan Bread",ar:"خبز تقليدي"},
+  "Beurre frais":{en:"Fresh Butter",ar:"زبدة طازجة"},
+  "Jus naturel":{en:"Natural Juice",ar:"عصير طبيعي"},
+  "Épices locales":{en:"Local Spices",ar:"توابل محلية"},
+  "Chocolat artisanal":{en:"Artisan Chocolate",ar:"شوكولاتة تقليدية"},
+  "Dattes Deglet Nour":{en:"Deglet Nour Dates",ar:"تمور دقلة نور"},
+  "Couscous artisanal":{en:"Artisanal Couscous",ar:"كسكس تقليدي"},
+  "Figue sèche":{en:"Dried Fig",ar:"تين مجفف"},
+  "Olives locales":{en:"Local Olives",ar:"زيتون محلي"}
+};
+
+/* ===== STATE ===== */
+let currentLang = localStorage.getItem("lang") || "fr";
+let currentProduct = null;
+
+/* ===== HELPERS ===== */
+function getName(product) {
+  if (product["name_" + currentLang]) return product["name_" + currentLang];
+  return translatedNames[product.name]?.[currentLang] || product.name;
+}
+
+function t(key) { return translations[currentLang][key] || key; }
+
+/* ===== DARK MODE ===== */
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("darkMode", document.body.classList.contains("dark") ? "true" : "false");
+}
+
+/* ===== MOBILE MENU ===== */
+function toggleMobileMenu() {
+  document.getElementById("mobileMenu").classList.toggle("open");
+  document.getElementById("hamburger").classList.toggle("open");
+}
+
+/* ===== DROPDOWN ===== */
+function toggleMenu(id) {
+  document.querySelectorAll(".dropdown").forEach(d => { if (d.id !== id) d.classList.add("hidden"); });
+  document.getElementById(id)?.classList.toggle("hidden");
+}
+function logout() { localStorage.removeItem("user"); window.location.reload(); }
+function goProfile() { window.location.href = "profile.html"; }
+
+document.addEventListener("click", e => {
+  if (!e.target.closest(".user-menu"))
+    document.querySelectorAll(".dropdown").forEach(d => d.classList.add("hidden"));
+  if (!e.target.closest(".hamburger") && !e.target.closest(".mobile-menu")) {
+    document.getElementById("mobileMenu").classList.remove("open");
+    document.getElementById("hamburger").classList.remove("open");
+  }
+});
+
+/* ===== AUTH UI ===== */
+function updateAuthUI() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  ["authArea", "authAreaMobile"].forEach((id, i) => {
+    const area = document.getElementById(id);
+    if (!area) return;
+    const dropId = i === 0 ? "dropdownDesktop" : "dropdownMobile";
+    if (user) {
+      const letter = user.name.charAt(0).toUpperCase();
+      const mob = i === 1;
+      area.innerHTML = `
+        <div class="user-menu" ${mob ? 'style="width:100%;position:relative;"' : ''}>
+          <div class="avatar-circle" onclick="toggleMenu('${dropId}')"
+            ${mob ? 'style="width:100%;border-radius:50px;height:38px;font-size:14px;gap:8px;"' : ''}>
+            ${letter}${mob ? " " + user.name : ""}
+          </div>
+          <div id="${dropId}" class="dropdown hidden">
+            <p>${user.name}</p>
+            <button onclick="goProfile()">${t("profileBtn")}</button>
+            <button onclick="logout()">${t("logoutBtn")}</button>
+          </div>
+        </div>`;
+      const av = area.querySelector(".avatar-circle");
+      if (av) av.style.background = localStorage.getItem("avatarTheme") || "linear-gradient(135deg,#3b82f6,#10b981)";
+    } else {
+      area.innerHTML = `<a href="login.html" class="nav-btn" ${i===1?'style="width:100%;justify-content:center;"':''}>${t("navLogin")}</a>`;
+    }
+  });
+}
+
+/* ===== CART COUNT ===== */
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const total = cart.reduce((s, i) => s + i.quantity, 0);
+  document.getElementById("cartCount").innerText = total;
+  const m = document.getElementById("cartCountMobile");
+  if (m) m.innerText = total;
+}
+
+/* ===== TOAST ===== */
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.innerText = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 2800);
+}
+
+/* ===== QUANTITY ===== */
+function changeQty(delta) {
+  const inp = document.getElementById("quantityInput");
+  const v = Math.max(1, parseInt(inp.value || 1) + delta);
+  inp.value = v;
+}
+
+/* ===== LANGUAGE ===== */
+function applyLanguage() {
+  const T = translations[currentLang];
+  document.getElementById("navHome").innerText = T.navHome;
+  document.getElementById("navProducts").innerText = T.navProducts;
+  const hm = document.getElementById("navHomeMobile");
+  const pm = document.getElementById("navProductsMobile");
+  if (hm) hm.innerText = "🏠 " + T.navHome;
+  if (pm) pm.innerText = "📦 " + T.navProducts;
+
+  document.getElementById("bcHome").innerText = T.bcHome;
+  document.getElementById("bcProducts").innerText = T.bcProducts;
+  document.getElementById("stockBadge").innerText = T.stock;
+  document.getElementById("addCartBtn").innerText = T.addCart;
+  const cl = document.getElementById("colorLabel");
+  if (cl) cl.innerText = T.colorLabel;
+
+  document.body.setAttribute("dir", currentLang === "ar" ? "rtl" : "ltr");
+
+  if (currentProduct) {
+    document.getElementById("productName").innerText = getName(currentProduct);
+    document.getElementById("bcCurrent").innerText = getName(currentProduct);
+    document.getElementById("productDesc").innerText =
+      T.desc + ": " + (currentProduct.description || "");
+  }
+}
+
+function changeLanguage() {
+  currentLang = document.getElementById("langSwitcher").value;
+  const mob = document.getElementById("langSwitcherMobile");
+  if (mob) mob.value = currentLang;
+  localStorage.setItem("lang", currentLang);
+  applyLanguage();
+  updateAuthUI();
+}
+function changeLangMobile() {
+  currentLang = document.getElementById("langSwitcherMobile").value;
+  document.getElementById("langSwitcher").value = currentLang;
+  localStorage.setItem("lang", currentLang);
+  applyLanguage();
+  updateAuthUI();
+}
+
+/* ===== STARS ===== */
+function initStars() {
+  const stars = document.querySelectorAll("#ratingStars span");
+  // Restore saved rating if any
+  const id = new URLSearchParams(window.location.search).get("id");
+  const saved = id ? (JSON.parse(localStorage.getItem("ratings") || "{}")[id] || 0) : 0;
+  stars.forEach((s, i) => {
+    if (i < saved) s.classList.add("active");
+    s.addEventListener("mouseenter", () => {
+      stars.forEach((st, j) => st.style.color = j <= i ? "#f59e0b" : "");
+    });
+    s.addEventListener("mouseleave", () => {
+      stars.forEach((st, j) => st.style.color = "");
+    });
+    s.addEventListener("click", () => {
+      stars.forEach((st, j) => {
+        j <= i ? st.classList.add("active") : st.classList.remove("active");
+      });
+      if (id) {
+        const ratings = JSON.parse(localStorage.getItem("ratings") || "{}");
+        ratings[id] = i + 1;
+        localStorage.setItem("ratings", JSON.stringify(ratings));
+      }
+    });
+  });
+}
+
+/* ===== INIT ===== */
+window.addEventListener("DOMContentLoaded", () => {
+  document.documentElement.style.setProperty("--c1", localStorage.getItem("themeC1") || "#3b82f6");
+  document.documentElement.style.setProperty("--c2", localStorage.getItem("themeC2") || "#10b981");
+  if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
+
+  currentLang = localStorage.getItem("lang") || "fr";
+  document.getElementById("langSwitcher").value = currentLang;
+  const mob = document.getElementById("langSwitcherMobile");
+  if (mob) mob.value = currentLang;
+
+  applyLanguage();
+  updateCartCount();
+  updateAuthUI();
+  initStars();
+
+  // Load product
+  const id = new URLSearchParams(window.location.search).get("id");
+  if (!id) { showToast(t("notFound")); return; }
+
+  fetch(`getProduct.php?id=${id}`)
+    .then(r => r.json())
+    .then(product => {
+      if (!product) { showToast(t("notFound")); return; }
+      currentProduct = product;
+
+      document.getElementById("productImg").src = product.image || "https://via.placeholder.com/500x420";
+      document.getElementById("productImg").alt = getName(product);
+      document.getElementById("productName").innerText = getName(product);
+      document.getElementById("bcCurrent").innerText = getName(product);
+      document.getElementById("productPrice").innerText = Number(product.price).toLocaleString() + " DA";
+      document.getElementById("productDesc").innerText =
+        translations[currentLang].desc + ": " + (product.description || "");
+
+      // Colors
+      let colors = [];
+      if (Array.isArray(product.colors)) colors = product.colors;
+      else if (typeof product.colors === "string" && product.colors.trim())
+        colors = product.colors.split(",");
+
+      const colorBlock = document.getElementById("colorBlock");
+      const colorSelect = document.getElementById("colorSelect");
+      if (colors.length > 0) {
+        colorBlock.style.display = "block";
+        colorSelect.innerHTML = "";
+        colors.forEach((c, idx) => {
+          const col = c.trim();
+          const inp = document.createElement("input");
+          inp.type = "radio"; inp.name = "color";
+          inp.id = "col" + idx; inp.value = col;
+          if (idx === 0) inp.checked = true;
+          const lbl = document.createElement("label");
+          lbl.setAttribute("for", inp.id);
+          lbl.style.backgroundColor = col;
+          lbl.title = col;
+          colorSelect.appendChild(inp);
+          colorSelect.appendChild(lbl);
+        });
+      }
+
+      // Add to cart
+      document.getElementById("addCartBtn").onclick = () => {
+        const selColor = (document.querySelector('input[name="color"]:checked') || {}).value || "default";
+        const qty = Math.max(1, parseInt(document.getElementById("quantityInput").value) || 1);
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let existing = cart.find(i => i.name === product.name && i.color === selColor);
+        if (existing) { existing.quantity += qty; }
+        else { cart.push({ id: product.id, name: product.name, price: product.price, img: product.image, color: selColor, quantity: qty }); }
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        showToast(`${getName(product)} (${selColor}) ${t("added")} 🛒`);
+        setTimeout(() => window.location.href = "cart.html", 1200);
+      };
+    })
+    .catch(() => showToast(t("notFound")));
+});
+</script>
+</body>
+</html>

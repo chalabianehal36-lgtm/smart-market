@@ -1,0 +1,10 @@
+# ⚠️ Never commit real database credentials
+db.local.php
+
+# System files
+.DS_Store
+Thumbs.db
+
+# PHP logs
+*.log
+error_log

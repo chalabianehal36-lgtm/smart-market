@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - Smart Market</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --c1: #3b82f6; --c2: #10b981;
+  --bg: #f0f9ff; --bg2: #e0f2fe;
+  --surface: rgba(255,255,255,0.7); --surface2: rgba(255,255,255,0.4);
+  --text: #0f172a; --text2: #475569;
+  --border: rgba(255,255,255,0.5);
+  --shadow: 0 8px 32px rgba(59,130,246,0.12);
+  --radius: 20px;
+}
+body.dark {
+  --bg: #0a0f1e; --bg2: #0d1526;
+  --surface: rgba(15,23,42,0.85); --surface2: rgba(30,41,59,0.7);
+  --text: #f1f5f9; --text2: #94a3b8;
+  --border: rgba(255,255,255,0.08);
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, var(--bg2), var(--bg));
+  color: var(--text); min-height: 100vh;
+  transition: background 0.4s, color 0.4s;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  background: var(--surface); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 32px; height: 64px; position: sticky; top: 0; z-index: 1000;
+  transition: background 0.4s;
+}
+.logo {
+  font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  flex-shrink: 0;
+}
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  padding: 7px 14px; border-radius: 50px; cursor: pointer;
+  font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 500;
+  color: var(--text); text-decoration: none;
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: 0.2s; white-space: nowrap; flex-shrink: 0;
+}
+.nav-btn:hover { background: var(--surface); border-color: var(--c1); color: var(--c1); }
+.cart-btn {
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: white !important; border-color: transparent !important; font-weight: 600;
+}
+.cart-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.35); color: white !important; }
+
+/* Hamburger */
+.hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 6px; border-radius: 8px;
+  background: var(--surface2); border: 1.5px solid var(--border);
+}
+.hamburger span { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 2px; transition: 0.3s; }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile menu */
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0;
+  background: var(--surface); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px; z-index: 999; flex-direction: column; gap: 10px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu-row { display: flex; gap: 8px; }
+.mobile-menu-row .nav-btn { flex: 1; justify-content: center; }
+
+/* ===== BREADCRUMB ===== */
+.breadcrumb {
+  padding: 16px 32px; display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--text2);
+}
+.breadcrumb a { color: var(--c1); text-decoration: none; font-weight: 500; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* ===== PAGE LAYOUT ===== */
+.page-wrap {
+  display: flex; gap: 24px;
+  max-width: 1000px; margin: 0 auto;
+  padding: 24px 32px 60px;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar { width: 220px; flex-shrink: 0; }
+.sidebar-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  backdrop-filter: blur(12px); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+  position: sticky; top: 88px;
+}
+
+.sidebar-avatar {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--border); margin-bottom: 16px;
+}
+.avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 700; color: white;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  transition: 0.4s;
+}
+.sidebar-name { font-size: 14px; font-weight: 600; color: var(--text); text-align: center; }
+
+.menu { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+.menu-btn {
+  width: 100%; padding: 10px 14px; border: none; border-radius: 12px;
+  cursor: pointer; background: var(--surface2); border: 1.5px solid transparent;
+  color: var(--text2); font-size: 13px; font-weight: 500;
+  font-family: 'Inter', sans-serif; text-align: left;
+  display: flex; align-items: center; gap: 8px; transition: 0.2s;
+}
+.menu-btn:hover { background: var(--surface); color: var(--c1); border-color: var(--border); }
+.menu-btn.active {
+  background: var(--surface); color: var(--c1);
+  border-color: var(--c1); font-weight: 600;
+  box-shadow: 0 4px 14px rgba(59,130,246,0.12);
+}
+
+.theme-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+.colors { display: flex; gap: 8px; }
+.color {
+  width: 26px; height: 26px; border-radius: 50%;
+  cursor: pointer; border: 2px solid transparent; transition: 0.2s;
+}
+.color:hover { transform: scale(1.15); border-color: var(--text); }
+
+/* ===== MAIN CONTENT ===== */
+.main { flex: 1; min-width: 0; }
+
+.profile-hero {
+  background: linear-gradient(135deg, var(--c1) 0%, #6366f1 50%, var(--c2) 100%);
+  border-radius: var(--radius); padding: 28px;
+  display: flex; align-items: center; gap: 20px;
+  position: relative; overflow: hidden;
+  margin-bottom: 20px; box-shadow: var(--shadow);
+  animation: fadeIn 0.4s ease;
+}
+.profile-hero::before {
+  content: ''; position: absolute;
+  width: 250px; height: 250px; border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  top: -80px; right: -60px; pointer-events: none;
+}
+.hero-avatar {
+  width: 80px; height: 80px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; font-weight: 700; color: white;
+  background: rgba(255,255,255,0.2);
+  border: 3px solid rgba(255,255,255,0.4);
+  transition: 0.4s; position: relative; z-index: 1;
+}
+.hero-info { position: relative; z-index: 1; }
+.hero-info h2 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: white; margin-bottom: 4px; }
+.hero-info p { font-size: 13px; color: rgba(255,255,255,0.8); }
+
+.section-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  backdrop-filter: blur(12px); border-radius: var(--radius);
+  padding: 24px; box-shadow: var(--shadow);
+  display: none; animation: slideUp 0.3s ease;
+}
+.section-card.active { display: block; }
+.section-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px; font-weight: 700; color: var(--text);
+  margin-bottom: 18px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.input-box { display: flex; flex-direction: column; gap: 6px; }
+.input-box.full { grid-column: 1 / -1; }
+.input-box label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; }
+input[type="text"], input[type="email"], input[type="tel"],
+input[type="password"], input[type="number"] {
+  width: 100%; padding: 11px 14px;
+  border-radius: 12px; border: 1.5px solid var(--border);
+  background: var(--surface2); backdrop-filter: blur(8px);
+  color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px;
+  outline: none; transition: 0.2s;
+}
+input:focus { border-color: var(--c1); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+
+.save-btn {
+  margin-top: 20px; padding: 13px 32px; border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: white; font-size: 14px; font-weight: 700;
+  font-family: 'Inter', sans-serif; cursor: pointer; transition: 0.3s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.save-btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59,130,246,0.35); }
+
+/* ===== FOOTER ===== */
+.footer {
+  background: #0f172a; color: rgba(255,255,255,0.55);
+  text-align: center; padding: 28px 20px; font-size: 13px;
+}
+.footer strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
+@keyframes slideUp { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 769px) {
+  .hamburger { display: none !important; }
+  .mobile-menu { display: none !important; }
+}
+@media (max-width: 768px) {
+  .navbar { padding: 0 16px; }
+  .navbar #navHome, .navbar #navProducts, .navbar .dark-toggle { display: none !important; }
+  .hamburger { display: flex !important; }
+  .page-wrap { flex-direction: column; padding: 16px 16px 60px; gap: 16px; }
+  .sidebar { width: 100%; }
+  .sidebar-card { position: static; }
+  .sidebar-avatar { flex-direction: row; }
+  .menu { flex-direction: row; flex-wrap: wrap; }
+  .menu-btn { flex: 1; min-width: 120px; }
+  .breadcrumb { padding: 12px 16px; }
+  .input-grid { grid-template-columns: 1fr; }
+  .input-box.full { grid-column: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<div class="navbar">
+  <div class="logo">Smart Market</div>
+  <div class="nav-right">
+    <a href="index.php"      class="nav-btn" id="navHome">Accueil</a>
+    <a href="products.html"  class="nav-btn" id="navProducts">Produits</a>
+    <button onclick="toggleDarkMode()" class="nav-btn dark-toggle">🌙</button>
+    <div class="nav-btn cart-btn" onclick="window.location.href='cart.html'">
+      🛒 <span id="cartCount">0</span>
+    </div>
+    <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-row">
+    <a href="index.php"     class="nav-btn" id="navHomeMobile">🏠 Accueil</a>
+    <a href="products.html" class="nav-btn" id="navProductsMobile">📦 Produits</a>
+  </div>
+  <div class="mobile-menu-row">
+    <button onclick="toggleDarkMode()" class="nav-btn">🌙 Mode</button>
+    <div class="nav-btn" onclick="window.location.href='cart.html'" style="justify-content:center;">
+      🛒 <span id="cartCountMobile">0</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BREADCRUMB ===== -->
+<div class="breadcrumb">
+  <a href="index.php" id="bcHome">Accueil</a> ›
+  <span id="bcProfile">Profil</span>
+</div>
+
+<!-- ===== PAGE ===== -->
+<div class="page-wrap">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-avatar">
+        <div class="avatar" id="sideAvatar">S</div>
+        <div class="sidebar-name" id="sidebarName">Utilisateur</div>
+      </div>
+      <div class="menu">
+        <button class="menu-btn active" onclick="show('about', this)" id="menuAbout">
+          👤 À propos
+        </button>
+        <button class="menu-btn" onclick="show('security', this)" id="menuSecurity">
+          🔒 Sécurité
+        </button>
+      </div>
+      <div class="theme-label" id="themeTitle">Thème</div>
+      <div class="colors">
+        <div class="color" style="background:#3b82f6" onclick="setTheme('#3b82f6','#10b981');setAvatarTheme('linear-gradient(135deg,#3b82f6,#10b981)')"></div>
+        <div class="color" style="background:#ef4444" onclick="setTheme('#ef4444','#f59e0b');setAvatarTheme('linear-gradient(135deg,#ef4444,#f59e0b)')"></div>
+        <div class="color" style="background:#8b5cf6" onclick="setTheme('#8b5cf6','#3b82f6');setAvatarTheme('linear-gradient(135deg,#8b5cf6,#3b82f6)')"></div>
+        <div class="color" style="background:#10b981" onclick="setTheme('#10b981','#06b6d4');setAvatarTheme('linear-gradient(135deg,#10b981,#06b6d4)')"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- Hero card -->
+    <div class="profile-hero">
+      <div class="hero-avatar" id="heroAvatar">S</div>
+      <div class="hero-info">
+        <h2 id="heroName">Utilisateur</h2>
+        <p id="heroEmail">email@example.com</p>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div id="about" class="section-card active">
+      <h3 id="aboutTitle">À propos</h3>
+      <div class="input-grid">
+        <div class="input-box">
+          <label id="lblNom">Prénom</label>
+          <input type="text" id="nom" placeholder="Prénom">
+        </div>
+        <div class="input-box">
+          <label id="lblPrenom">Nom</label>
+          <input type="text" id="prenom" placeholder="Nom">
+        </div>
+        <div class="input-box">
+          <label id="lblEmail">Email</label>
+          <input type="email" id="email" placeholder="email@example.com">
+        </div>
+        <div class="input-box">
+          <label id="lblPhone">Téléphone</label>
+          <input type="tel" id="phone" placeholder="+213 ...">
+        </div>
+        <div class="input-box full">
+          <label id="lblAddress">Adresse</label>
+          <input type="text" id="address" placeholder="Adresse complète">
+        </div>
+      </div>
+      <button class="save-btn" onclick="save()" id="saveBtn">💾 Enregistrer</button>
+    </div>
+
+    <!-- SECURITY -->
+    <div id="security" class="section-card">
+      <h3 id="secTitle">Sécurité</h3>
+      <div class="input-grid">
+        <div class="input-box full">
+          <label id="lblCurrent">Mot de passe actuel</label>
+          <input type="password" id="currentPassword" placeholder="••••••••">
+        </div>
+        <div class="input-box">
+          <label id="lblNew">Nouveau mot de passe</label>
+          <input type="password" id="newPassword" placeholder="••••••••">
+        </div>
+        <div class="input-box">
+          <label id="lblConfirm">Confirmer</label>
+          <input type="password" id="confirmPassword" placeholder="••••••••">
+        </div>
+      </div>
+      <button class="save-btn" onclick="updatePassword()" id="updatePassBtn">🔒 Mettre à jour</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">© 2026 <strong>Smart Market</strong> | Computer Science Project</div>
+
+<script>
+// ===== TRANSLATIONS =====
+const translations = {
+  fr: {
+    navHome:"Accueil", navProducts:"Produits", bcHome:"Accueil", bcProfile:"Profil",
+    menuAbout:"👤 À propos", menuSecurity:"🔒 Sécurité",
+    themeTitle:"Thème", aboutTitle:"À propos", secTitle:"Sécurité",
+    lblNom:"Prénom", lblPrenom:"Nom", lblEmail:"Email",
+    lblPhone:"Téléphone", lblAddress:"Adresse",
+    lblCurrent:"Mot de passe actuel", lblNew:"Nouveau mot de passe", lblConfirm:"Confirmer",
+    saveBtn:"💾 Enregistrer", updatePassBtn:"🔒 Mettre à jour",
+    phNom:"Prénom", phPrenom:"Nom", phEmail:"email@example.com",
+    phPhone:"+213 ...", phAddress:"Adresse complète",
+    alertSave:"Profil mis à jour !", alertPassOk:"Mot de passe mis à jour !",
+    alertPassMismatch:"Les mots de passe ne correspondent pas !",
+    alertPassFill:"Veuillez remplir tous les champs",
+    alertLogin:"Veuillez vous connecter d'abord"
+  },
+  en: {
+    navHome:"Home", navProducts:"Products", bcHome:"Home", bcProfile:"Profile",
+    menuAbout:"👤 About", menuSecurity:"🔒 Security",
+    themeTitle:"Theme", aboutTitle:"About", secTitle:"Security",
+    lblNom:"First Name", lblPrenom:"Last Name", lblEmail:"Email",
+    lblPhone:"Phone", lblAddress:"Address",
+    lblCurrent:"Current Password", lblNew:"New Password", lblConfirm:"Confirm Password",
+    saveBtn:"💾 Save", updatePassBtn:"🔒 Update Password",
+    phNom:"First name", phPrenom:"Last name", phEmail:"email@example.com",
+    phPhone:"+213 ...", phAddress:"Full address",
+    alertSave:"Profile updated!", alertPassOk:"Password updated!",
+    alertPassMismatch:"Passwords do not match!",
+    alertPassFill:"Please fill all password fields",
+    alertLogin:"Please log in first"
+  },
+  ar: {
+    navHome:"الرئيسية", navProducts:"المنتجات", bcHome:"الرئيسية", bcProfile:"الملف الشخصي",
+    menuAbout:"👤 حول", menuSecurity:"🔒 الأمان",
+    themeTitle:"الخلفية", aboutTitle:"حول", secTitle:"الأمان",
+    lblNom:"الاسم", lblPrenom:"اللقب", lblEmail:"البريد الإلكتروني",
+    lblPhone:"الهاتف", lblAddress:"العنوان",
+    lblCurrent:"كلمة المرور الحالية", lblNew:"كلمة المرور الجديدة", lblConfirm:"تأكيد كلمة المرور",
+    saveBtn:"💾 حفظ", updatePassBtn:"🔒 تحديث كلمة المرور",
+    phNom:"الاسم", phPrenom:"اللقب", phEmail:"email@example.com",
+    phPhone:"+213 ...", phAddress:"العنوان الكامل",
+    alertSave:"تم تحديث الملف الشخصي!", alertPassOk:"تم تحديث كلمة المرور!",
+    alertPassMismatch:"كلمتا المرور غير متطابقتين!",
+    alertPassFill:"يرجى ملء جميع حقول كلمة المرور",
+    alertLogin:"يرجى تسجيل الدخول أولاً"
+  }
+};
+
+const lang = localStorage.getItem("lang") || "fr";
+let tr = translations[lang] || translations.fr;
+
+// ===== APPLY TRANSLATIONS =====
+function applyTranslations() {
+  tr = translations[lang] || translations.fr;
+  document.body.dir = (lang === "ar") ? "rtl" : "ltr";
+  const s = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+  s("navHome", tr.navHome); s("navProducts", tr.navProducts);
+  s("navHomeMobile", "🏠 " + tr.navHome); s("navProductsMobile", "📦 " + tr.navProducts);
+  s("bcHome", tr.bcHome); s("bcProfile", tr.bcProfile);
+  s("menuAbout", tr.menuAbout); s("menuSecurity", tr.menuSecurity);
+  s("themeTitle", tr.themeTitle);
+  s("aboutTitle", tr.aboutTitle); s("secTitle", tr.secTitle);
+  s("lblNom", tr.lblNom); s("lblPrenom", tr.lblPrenom);
+  s("lblEmail", tr.lblEmail); s("lblPhone", tr.lblPhone); s("lblAddress", tr.lblAddress);
+  s("lblCurrent", tr.lblCurrent); s("lblNew", tr.lblNew); s("lblConfirm", tr.lblConfirm);
+  s("saveBtn", tr.saveBtn); s("updatePassBtn", tr.updatePassBtn);
+  document.getElementById("nom").placeholder     = tr.phNom;
+  document.getElementById("prenom").placeholder  = tr.phPrenom;
+  document.getElementById("email").placeholder   = tr.phEmail;
+  document.getElementById("phone").placeholder   = tr.phPhone;
+  document.getElementById("address").placeholder = tr.phAddress;
+}
+
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.getElementById('hamburger').classList.toggle('open');
+}
+document.addEventListener("click", function(e) {
+  if (!e.target.closest('.hamburger') && !e.target.closest('.mobile-menu')) {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+  }
+});
+
+// ===== DARK MODE =====
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("darkMode", document.body.classList.contains("dark") ? "true" : "false");
+}
+
+// ===== SHOW SECTION =====
+function show(id, btn) {
+  document.querySelectorAll('.section-card').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ===== UPDATE AVATARS =====
+function updateAvatarLetter(letter) {
+  document.getElementById("sideAvatar").innerText = letter;
+  document.getElementById("heroAvatar").innerText = letter;
+}
+function updateAvatarThemeColor(theme) {
+  document.getElementById("sideAvatar").style.background = theme;
+  document.getElementById("heroAvatar").style.background = theme;
+}
+
+// ===== THEME =====
+function setTheme(c1, c2) {
+  document.documentElement.style.setProperty('--c1', c1);
+  document.documentElement.style.setProperty('--c2', c2);
+  localStorage.setItem('themeC1', c1);
+  localStorage.setItem('themeC2', c2);
+}
+function setAvatarTheme(gradient) {
+  updateAvatarThemeColor(gradient);
+  localStorage.setItem('avatarTheme', gradient);
+}
+
+// ===== SAVE USER DATA TO localStorage (shared with other pages) =====
+function saveUserToStorage(nom, prenom, email) {
+  const fullName   = (nom + " " + prenom).trim();
+  const firstLetter = nom.charAt(0).toUpperCase() || "U";
+
+  // ✅ هذا هو المفتاح الذي تقرأه الصفحات الأخرى لعرض الـ avatar
+  localStorage.setItem("user", JSON.stringify({
+    name:        fullName,
+    email:       email,
+    avatarLetter: firstLetter
+  }));
+
+  // حفظ منفصل للحقول
+  localStorage.setItem("nom",     nom);
+  localStorage.setItem("prenom",  prenom);
+  localStorage.setItem("email",   email);
+}
+
+// ===== SAVE LOCAL (UI update) =====
+function saveLocal() {
+  const nom    = document.getElementById("nom").value;
+  const prenom = document.getElementById("prenom").value;
+  const email  = document.getElementById("email").value;
+  const fullName = (nom + " " + prenom).trim();
+
+  document.getElementById("heroName").innerText    = fullName || "Utilisateur";
+  document.getElementById("sidebarName").innerText = fullName || "Utilisateur";
+  document.getElementById("heroEmail").innerText   = email || "";
+  updateAvatarLetter(nom.charAt(0).toUpperCase() || "U");
+
+  saveUserToStorage(nom, prenom, email);
+
+  localStorage.setItem("phone",   document.getElementById("phone").value);
+  localStorage.setItem("address", document.getElementById("address").value);
+}
+
+// ===== LOAD LOCAL =====
+function loadLocal() {
+  const nom    = localStorage.getItem("nom")    || "";
+  const prenom = localStorage.getItem("prenom") || "";
+  if (nom) {
+    document.getElementById("nom").value    = nom;
+    document.getElementById("prenom").value = prenom;
+    const fullName = (nom + " " + prenom).trim();
+    document.getElementById("heroName").innerText    = fullName;
+    document.getElementById("sidebarName").innerText = fullName;
+    updateAvatarLetter(nom.charAt(0).toUpperCase());
+  }
+  document.getElementById("email").value   = localStorage.getItem("email")   || "";
+  document.getElementById("phone").value   = localStorage.getItem("phone")   || "";
+  document.getElementById("address").value = localStorage.getItem("address") || "";
+  const em = localStorage.getItem("email");
+  if (em) document.getElementById("heroEmail").innerText = em;
+}
+
+// ===== SAVE (server) =====
+function save() {
+  saveLocal(); // update UI + localStorage immediately
+
+  const data = {
+    first_name: document.getElementById("nom").value,
+    last_name:  document.getElementById("prenom").value,
+    email:      document.getElementById("email").value,
+    phone:      document.getElementById("phone").value,
+    address:    document.getElementById("address").value
+  };
+
+  fetch('update_user.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.status === "success") showToast("✅ " + tr.alertSave, "#10b981");
+    else showToast("❌ " + (res.message || "Error"), "#ef4444");
+  })
+  .catch(err => console.error(err));
+}
+
+// ===== UPDATE PASSWORD =====
+function updatePassword() {
+  const current = document.getElementById("currentPassword").value;
+  const newPass  = document.getElementById("newPassword").value;
+  const confirm  = document.getElementById("confirmPassword").value;
+  if (!current || !newPass || !confirm) { showToast("⚠️ " + tr.alertPassFill, "#f59e0b"); return; }
+  if (newPass !== confirm) { showToast("❌ " + tr.alertPassMismatch, "#ef4444"); return; }
+
+  fetch('update_password.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ current_password: current, new_password: newPass })
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.status === "success") {
+      showToast("✅ " + tr.alertPassOk, "#10b981");
+      document.getElementById("currentPassword").value = "";
+      document.getElementById("newPassword").value     = "";
+      document.getElementById("confirmPassword").value = "";
+    } else {
+      showToast("❌ " + (res.message || "Error"), "#ef4444");
+    }
+  })
+  .catch(err => console.error(err));
+}
+
+// ===== TOAST =====
+function showToast(msg, color) {
+  let t = document.createElement("div");
+  t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:${color || '#3b82f6'};color:white;padding:12px 28px;border-radius:50px;
+    font-weight:600;font-size:14px;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    font-family:'Inter',sans-serif;animation:toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1);`;
+  t.innerText = msg;
+  document.body.appendChild(t);
+  const style = document.createElement("style");
+  style.textContent = `@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}`;
+  document.head.appendChild(style);
+  setTimeout(() => { t.style.opacity = "0"; t.style.transition = "opacity 0.4s"; setTimeout(() => t.remove(), 400); }, 3000);
+}
+
+// ===== ON LOAD =====
+window.addEventListener("DOMContentLoaded", () => {
+  // Dark mode
+  if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
+
+  // Theme colors
+  const savedC1 = localStorage.getItem('themeC1') || '#3b82f6';
+  const savedC2 = localStorage.getItem('themeC2') || '#10b981';
+  setTheme(savedC1, savedC2);
+
+  // Avatar theme
+  const avatarTheme = localStorage.getItem('avatarTheme') || 'linear-gradient(135deg,#3b82f6,#10b981)';
+  updateAvatarThemeColor(avatarTheme);
+
+  // Cart count
+  const cart  = JSON.parse(localStorage.getItem("cart") || "[]");
+  const count = cart.reduce((s, i) => s + i.quantity, 0);
+  document.getElementById("cartCount").innerText = count;
+  const mob = document.getElementById("cartCountMobile");
+  if (mob) mob.innerText = count;
+
+  // Translations
+  applyTranslations();
+
+  // Load local first (instant display)
+  loadLocal();
+
+  // ✅ FIX: fetch from server — response is now flat (no .data wrapper)
+  fetch('get_user.php', { credentials: 'include' })
+    .then(res => res.json())
+    .then(user => {
+      // إذا رجع خطأ (error key موجود) نتوقف
+      if (user.error) return;
+
+      const nom    = user.first_name || "";
+      const prenom = user.last_name  || "";
+      const email  = user.email      || "";
+      const fullName = (nom + " " + prenom).trim();
+
+      // تعبئة الحقول
+      document.getElementById("nom").value     = nom;
+      document.getElementById("prenom").value  = prenom;
+      document.getElementById("email").value   = email;
+      document.getElementById("phone").value   = user.phone   || "";
+      document.getElementById("address").value = user.address || "";
+
+      // تحديث الـ UI
+      document.getElementById("heroName").innerText    = fullName || "Utilisateur";
+      document.getElementById("sidebarName").innerText = fullName || "Utilisateur";
+      document.getElementById("heroEmail").innerText   = email;
+      if (nom) updateAvatarLetter(nom.charAt(0).toUpperCase());
+
+      // ✅ حفظ في localStorage حتى تستفيد منه الصفحات الأخرى
+      saveUserToStorage(nom, prenom, email);
+      localStorage.setItem("phone",   user.phone   || "");
+      localStorage.setItem("address", user.address || "");
+    })
+    .catch(() => {});
+});
+</script>
+</body>
+</html>

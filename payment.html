@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment - Smart Market</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --c1: #3b82f6; --c2: #10b981;
+  --bg: #f0f9ff; --bg2: #e0f2fe;
+  --surface: rgba(255,255,255,0.7); --surface2: rgba(255,255,255,0.4);
+  --text: #0f172a; --text2: #475569;
+  --border: rgba(255,255,255,0.5);
+  --shadow: 0 8px 32px rgba(59,130,246,0.12);
+  --radius: 20px;
+}
+body.dark {
+  --bg: #0a0f1e; --bg2: #0d1526;
+  --surface: rgba(15,23,42,0.85); --surface2: rgba(30,41,59,0.7);
+  --text: #f1f5f9; --text2: #94a3b8;
+  --border: rgba(255,255,255,0.08);
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, var(--bg2), var(--bg));
+  color: var(--text); min-height: 100vh;
+  transition: background 0.4s, color 0.4s;
+}
+.navbar {
+  background: var(--surface); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 32px; height: 64px; position: sticky; top: 0; z-index: 1000;
+  transition: background 0.4s;
+}
+.logo {
+  font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  flex-shrink: 0;
+}
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  padding: 7px 14px; border-radius: 50px; cursor: pointer;
+  font-size: 13px; font-family: 'Inter', sans-serif; font-weight: 500;
+  color: var(--text); text-decoration: none;
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: 0.2s; white-space: nowrap; flex-shrink: 0;
+}
+.nav-btn:hover { background: var(--surface); border-color: var(--c1); color: var(--c1); }
+.cart-btn {
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: white !important; border-color: transparent !important; font-weight: 600;
+}
+.cart-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.35); color: white !important; }
+.hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 6px; border-radius: 8px;
+  background: var(--surface2); border: 1.5px solid var(--border);
+}
+.hamburger span { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 2px; transition: 0.3s; }
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-menu {
+  display: none; position: fixed; top: 64px; left: 0; right: 0;
+  background: var(--surface); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px; z-index: 999; flex-direction: column; gap: 10px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu-row { display: flex; gap: 8px; }
+.mobile-menu-row .nav-btn { flex: 1; justify-content: center; }
+.breadcrumb {
+  padding: 16px 32px; display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--text2);
+}
+.breadcrumb a { color: var(--c1); text-decoration: none; font-weight: 500; }
+.breadcrumb a:hover { text-decoration: underline; }
+.page-wrap { max-width: 960px; margin: 0 auto; padding: 24px 32px 60px; }
+.steps {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin-bottom: 36px;
+}
+.step { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.step-circle {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  color: var(--text2); transition: 0.3s;
+}
+.step.done .step-circle,
+.step.active .step-circle {
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: white; border-color: transparent;
+}
+.step.active .step-circle { box-shadow: 0 4px 16px rgba(59,130,246,0.35); }
+.step-label { font-size: 11px; font-weight: 500; color: var(--text2); }
+.step.active .step-label { color: var(--c1); }
+.step-line {
+  flex: 1; height: 2px; max-width: 80px;
+  background: var(--border); margin: 0 8px; margin-bottom: 20px;
+}
+.step-line.done { background: linear-gradient(135deg, var(--c1), var(--c2)); }
+.card {
+  display: flex; border-radius: 25px; overflow: hidden;
+  background: var(--surface); backdrop-filter: blur(12px);
+  border: 1.5px solid var(--border); box-shadow: var(--shadow);
+  animation: fade 0.5s ease;
+}
+@keyframes fade { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+.left {
+  width: 38%; padding: 32px 28px;
+  background: linear-gradient(135deg, var(--c1) 0%, #6366f1 50%, var(--c2) 100%);
+  position: relative; overflow: hidden;
+}
+.left::before {
+  content: ''; position: absolute;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  top: -100px; right: -80px; pointer-events: none;
+}
+.left::after {
+  content: ''; position: absolute;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  bottom: -70px; left: -50px; pointer-events: none;
+}
+.left-content { position: relative; z-index: 1; }
+.left h2 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: white; margin-bottom: 24px; }
+.order-item {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 14px; padding: 12px 16px; color: white; font-size: 14px; font-weight: 500;
+  margin-bottom: 10px; word-break: break-word; backdrop-filter: blur(4px);
+}
+.order-item.total { background: rgba(255,255,255,0.2); font-size: 18px; font-weight: 700; margin-top: 16px; }
+.feature-list { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+.feature-item { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.9); font-size: 13px; }
+.feature-icon {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.right { flex: 1; padding: 32px 28px; }
+.right h2 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+.input-box { margin-bottom: 14px; }
+label { font-size: 13px; font-weight: 500; color: var(--text2); }
+input[type="text"], input[type="tel"], input[type="password"] {
+  width: 100%; padding: 12px 16px; margin-top: 6px;
+  border-radius: 12px; border: 1.5px solid var(--border);
+  background: var(--surface2); backdrop-filter: blur(8px);
+  color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px;
+  outline: none; transition: 0.2s;
+}
+input:focus { border-color: var(--c1); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+.input-error { border: 2px solid #ef4444 !important; background: rgba(239,68,68,0.08) !important; }
+.input-row { display: flex; gap: 12px; }
+.input-row .input-box { flex: 1; }
+.section-label {
+  font-size: 13px; font-weight: 600; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.8px; margin: 20px 0 12px;
+}
+.methods { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+.method {
+  background: var(--surface2); border-radius: 14px; padding: 16px 12px;
+  text-align: center; cursor: pointer; transition: 0.3s;
+  border: 1.5px solid var(--border);
+}
+.method i { font-size: 26px; color: var(--c1); margin-bottom: 6px; display: block; }
+.method p { font-size: 13px; font-weight: 600; color: var(--text); margin: 0; }
+.method:hover { transform: translateY(-4px); border-color: var(--c1); box-shadow: 0 8px 24px rgba(59,130,246,0.15); }
+.method.active { border-color: var(--c2); background: rgba(16,185,129,0.06); }
+.method.active i { color: var(--c2); }
+.btn {
+  width: 100%; padding: 14px; border: none; border-radius: 50px;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: white; font-size: 15px; font-weight: 700;
+  font-family: 'Inter', sans-serif; cursor: pointer; transition: 0.3s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59,130,246,0.35); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+.success-wrap {
+  display: none; justify-content: center; align-items: center;
+  padding: 60px 20px; min-height: 500px;
+}
+.success-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 25px; backdrop-filter: blur(12px);
+  padding: 60px 48px; text-align: center; max-width: 480px;
+  width: 100%; box-shadow: var(--shadow); animation: fade 0.5s ease;
+}
+.success-icon {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 24px; font-size: 36px; color: white;
+  box-shadow: 0 10px 30px rgba(16,185,129,0.35);
+}
+.success-card h1 { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.success-card p { color: var(--text2); font-size: 15px; margin-bottom: 28px; }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 13px 32px;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: white; border: none; border-radius: 50px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  text-decoration: none; font-family: 'Inter', sans-serif; transition: 0.3s;
+}
+.back-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59,130,246,0.35); }
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: white; padding: 12px 28px; border-radius: 50px;
+  font-weight: 600; font-size: 14px; z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2); font-family: 'Inter', sans-serif;
+  animation: toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes toastIn {
+  from { opacity:0; transform:translateX(-50%) translateY(20px); }
+  to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+.footer {
+  background: #0f172a; color: rgba(255,255,255,0.55);
+  text-align: center; padding: 28px 20px; font-size: 13px; margin-top: 10px;
+}
+.footer strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+@media (min-width: 769px) { .hamburger { display: none !important; } .mobile-menu { display: none !important; } }
+@media (max-width: 768px) {
+  .navbar { padding: 0 16px; }
+  .navbar #navHome, .navbar #navProducts, .navbar .dark-toggle { display: none !important; }
+  .navbar .cart-btn { display: flex !important; }
+  .hamburger { display: flex !important; }
+  .page-wrap { padding: 16px 16px 60px; }
+  .breadcrumb { padding: 12px 16px; }
+  .card { flex-direction: column; }
+  .left { width: 100%; padding: 24px 20px; }
+  .right { padding: 24px 20px; }
+  .step-line { max-width: 40px; }
+}
+@media (max-width: 480px) { .methods { grid-template-columns: repeat(3,1fr); gap: 6px; } .method { padding: 12px 8px; } }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="logo">Smart Market</div>
+  <div class="nav-right">
+    <a href="index.php" class="nav-btn" id="navHome">Accueil</a>
+    <a href="products.html" class="nav-btn" id="navProducts">Produits</a>
+    <button onclick="toggleDarkMode()" class="nav-btn dark-toggle">🌙</button>
+    <div class="nav-btn cart-btn" onclick="window.location.href='cart.html'">
+      🛒 <span id="cartCount">0</span>
+    </div>
+    <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-row">
+    <a href="index.php"     class="nav-btn" id="navHomeMobile">🏠 Accueil</a>
+    <a href="products.html" class="nav-btn" id="navProductsMobile">📦 Produits</a>
+  </div>
+  <div class="mobile-menu-row">
+    <button onclick="toggleDarkMode()" class="nav-btn">🌙 Mode</button>
+    <div class="nav-btn" onclick="window.location.href='cart.html'" style="justify-content:center;">
+      🛒 <span id="cartCountMobile">0</span>
+    </div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="index.php" id="bcHome">Accueil</a> ›
+  <a href="cart.html" id="bcCart">Panier</a> ›
+  <span id="bcPay">Paiement</span>
+</div>
+
+<div class="page-wrap" id="pageWrap">
+  <div class="steps">
+    <div class="step done">
+      <div class="step-circle">✓</div>
+      <span class="step-label" id="stepCart">Panier</span>
+    </div>
+    <div class="step-line done"></div>
+    <div class="step done">
+      <div class="step-circle">✓</div>
+      <span class="step-label" id="stepDelivery">Livraison</span>
+    </div>
+    <div class="step-line done"></div>
+    <div class="step active">
+      <div class="step-circle">3</div>
+      <span class="step-label" id="stepPay">Paiement</span>
+    </div>
+  </div>
+
+  <div class="card" id="mainCard">
+    <div class="left">
+      <div class="left-content">
+        <h2 id="orderTitle">Commande</h2>
+        <div id="orderSummaryItems">
+          <div class="order-item" id="p1">✔ Livraison rapide</div>
+          <div class="order-item" id="p2">✔ Paiement sécurisé</div>
+          <div class="order-item" id="p3">✔ Garantie incluse</div>
+        </div>
+        <div class="feature-list">
+          <div class="feature-item"><div class="feature-icon">🔒</div><span id="feat1">Paiement 100% sécurisé</span></div>
+          <div class="feature-item"><div class="feature-icon">🚚</div><span id="feat2">Livraison rapide 24-48h</span></div>
+          <div class="feature-item"><div class="feature-icon">↩️</div><span id="feat3">Retour gratuit 30 jours</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <h2 id="payTitle">Informations de paiement</h2>
+      <div class="input-box">
+        <label id="nameLabel">Nom complet</label>
+        <input type="text" id="name" placeholder="Entrez votre nom" autocomplete="name">
+      </div>
+      <div class="input-box">
+        <label id="cardLabel">Numéro de carte</label>
+        <input type="tel" id="card" placeholder="1234 5678 9012 3456" inputmode="numeric" maxlength="19" autocomplete="cc-number">
+      </div>
+      <div class="input-row">
+        <div class="input-box">
+          <label id="expLabel">Date d'expiration</label>
+          <input type="text" id="exp" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+        </div>
+        <div class="input-box">
+          <label>CVV</label>
+          <input type="password" id="cvv" placeholder="***" maxlength="4" autocomplete="cc-csc">
+        </div>
+      </div>
+      <div class="section-label" id="methodTitle">Méthode de paiement</div>
+      <div class="methods">
+        <div class="method" onclick="selectMethod(this)">
+          <i class="fa-brands fa-cc-visa"></i><p>Visa</p>
+        </div>
+        <div class="method" onclick="selectMethod(this)">
+          <i class="fa-brands fa-cc-mastercard"></i><p>MasterCard</p>
+        </div>
+        <div class="method" onclick="selectMethod(this)">
+          <i class="fa-brands fa-paypal"></i><p>PayPal</p>
+        </div>
+      </div>
+      <button class="btn" id="payBtn" onclick="pay()">
+        <i class="fa-solid fa-lock" style="font-size:14px"></i>
+        <span id="payBtnText">Payer maintenant</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="success-wrap" id="successBox">
+  <div class="success-card">
+    <div class="success-icon">✓</div>
+    <h1 id="successTitle">Paiement réussi 🎉</h1>
+    <p id="successText">Merci pour votre commande ! Vous recevrez une confirmation par SMS.</p>
+    <a href="products.html" class="back-btn" id="backBtn">← Retour aux produits</a>
+  </div>
+</div>
+
+<div class="footer">© 2026 <strong>Smart Market</strong> | Computer Science Project</div>
+
+<script>
+const TRANSLATIONS = {
+  fr: {
+    orderTitle:"Commande", payTitle:"Informations de paiement",
+    nameLabel:"Nom complet", cardLabel:"Numéro de carte", expLabel:"Date d'expiration",
+    methodTitle:"Méthode de paiement", payBtn:"Payer maintenant",
+    p1:"✔ Livraison rapide", p2:"✔ Paiement sécurisé", p3:"✔ Garantie incluse",
+    feat1:"Paiement 100% sécurisé", feat2:"Livraison rapide 24-48h", feat3:"Retour gratuit 30 jours",
+    stepCart:"Panier", stepDelivery:"Livraison", stepPay:"Paiement",
+    bcHome:"Accueil", bcCart:"Panier", bcPay:"Paiement",
+    navHome:"Accueil", navProducts:"Produits",
+    successTitle:"Paiement réussi 🎉",
+    successText:"Merci pour votre commande ! Vous recevrez une confirmation par SMS.",
+    backBtn:"← Retour aux produits",
+    alertFields:"Veuillez remplir tous les champs et choisir un mode de paiement",
+    alertMethod:"Veuillez choisir un mode de paiement",
+    alertOrder:"Commande introuvable. Veuillez recommencer.",
+    alertLogin:"Veuillez vous connecter d'abord !",
+    sending:"Envoi en cours...",
+    placeholders:{ name:"Entrez votre nom", card:"1234 5678 9012 3456", exp:"MM/YY", cvv:"CVV" }
+  },
+  en: {
+    orderTitle:"Order Summary", payTitle:"Payment Information",
+    nameLabel:"Full Name", cardLabel:"Card Number", expLabel:"Expiry Date",
+    methodTitle:"Payment Method", payBtn:"Pay Now",
+    p1:"✔ Fast Delivery", p2:"✔ Secure Payment", p3:"✔ Warranty Included",
+    feat1:"100% Secure Payment", feat2:"Fast Delivery 24-48h", feat3:"Free Return 30 Days",
+    stepCart:"Cart", stepDelivery:"Delivery", stepPay:"Payment",
+    bcHome:"Home", bcCart:"Cart", bcPay:"Payment",
+    navHome:"Home", navProducts:"Products",
+    successTitle:"Payment Successful 🎉",
+    successText:"Thank you for your order! You will receive a confirmation shortly.",
+    backBtn:"← Back to products",
+    alertFields:"Please fill all fields and select a payment method",
+    alertMethod:"Please select a payment method",
+    alertOrder:"Order not found. Please try again.",
+    alertLogin:"Please log in first!",
+    sending:"Processing...",
+    placeholders:{ name:"Enter your name", card:"1234 5678 9012 3456", exp:"MM/YY", cvv:"CVV" }
+  },
+  ar: {
+    orderTitle:"ملخص الطلب", payTitle:"معلومات الدفع",
+    nameLabel:"الاسم الكامل", cardLabel:"رقم البطاقة", expLabel:"تاريخ الانتهاء",
+    methodTitle:"طريقة الدفع", payBtn:"ادفع الآن",
+    p1:"✔ توصيل سريع", p2:"✔ دفع آمن", p3:"✔ ضمان شامل",
+    feat1:"دفع آمن 100%", feat2:"توصيل سريع 24-48 ساعة", feat3:"إرجاع مجاني 30 يوم",
+    stepCart:"السلة", stepDelivery:"التوصيل", stepPay:"الدفع",
+    bcHome:"الرئيسية", bcCart:"السلة", bcPay:"الدفع",
+    navHome:"الرئيسية", navProducts:"المنتجات",
+    successTitle:"تم الدفع بنجاح 🎉",
+    successText:"شكراً لطلبك! ستتلقى تأكيداً قريباً.",
+    backBtn:"← العودة للمنتجات",
+    alertFields:"يرجى ملء جميع الحقول واختيار طريقة الدفع",
+    alertMethod:"يرجى اختيار طريقة الدفع",
+    alertOrder:"الطلب غير موجود. يرجى المحاولة مجدداً.",
+    alertLogin:"يرجى تسجيل الدخول أولاً!",
+    sending:"جارٍ الإرسال...",
+    placeholders:{ name:"أدخل اسمك", card:"1234 5678 9012 3456", exp:"MM/YY", cvv:"CVV" }
+  }
+};
+
+const lang = localStorage.getItem("lang") || "fr";
+const tr   = TRANSLATIONS[lang] || TRANSLATIONS.fr;
+let selectedMethod = null;
+
+function applyTheme() {
+  const c1 = localStorage.getItem('themeC1') || '#3b82f6';
+  const c2 = localStorage.getItem('themeC2') || '#10b981';
+  document.documentElement.style.setProperty('--c1', c1);
+  document.documentElement.style.setProperty('--c2', c2);
+}
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.getElementById('hamburger').classList.toggle('open');
+}
+document.addEventListener("click", function(e) {
+  if (!e.target.closest('.hamburger') && !e.target.closest('.mobile-menu')) {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+  }
+});
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("darkMode", document.body.classList.contains("dark") ? "true" : "false");
+}
+function selectMethod(el) {
+  document.querySelectorAll(".method").forEach(m => m.classList.remove("active"));
+  el.classList.add("active");
+  selectedMethod = el.querySelector("p").innerText.trim();
+}
+
+// ===== PAY =====
+function pay() {
+  const nameEl = document.getElementById("name");
+  const cardEl = document.getElementById("card");
+  const expEl  = document.getElementById("exp");
+  const cvvEl  = document.getElementById("cvv");
+  const payBtn = document.getElementById("payBtn");
+
+  [nameEl, cardEl, expEl, cvvEl].forEach(el => el.classList.remove("input-error"));
+  let valid = true;
+  if (!nameEl.value.trim()) { nameEl.classList.add("input-error"); valid = false; }
+  if (!cardEl.value.trim()) { cardEl.classList.add("input-error"); valid = false; }
+  if (!expEl.value.trim())  { expEl.classList.add("input-error");  valid = false; }
+  if (!cvvEl.value.trim())  { cvvEl.classList.add("input-error");  valid = false; }
+  if (!valid) { showToast(tr.alertFields); return; }
+  if (!selectedMethod) { showToast(tr.alertMethod); return; }
+
+  const order = JSON.parse(localStorage.getItem("pendingOrder") || "null");
+  if (!order || !order.cart) { showToast(tr.alertOrder); return; }
+
+  // ✅ قراءة user_id من localStorage (يُحفظ عند تسجيل الدخول)
+  const userData = JSON.parse(localStorage.getItem("user") || "{}");
+  if (!userData.id) {
+    showToast(tr.alertLogin);
+    setTimeout(() => window.location.href = 'login.html', 1500);
+    return;
+  }
+
+  let total = 0;
+  order.cart.forEach(item => { total += item.price * item.quantity; });
+
+  const payload = {
+    cart:    order.cart,
+    name:    order.name,
+    phone:   order.phone,
+    address: order.address,
+    payment: { method: selectedMethod, amount: total },
+    user_id: userData.id   // ✅ الحل: نرسل user_id مع كل طلب
+  };
+
+  payBtn.disabled = true;
+  document.getElementById("payBtnText").innerText = tr.sending;
+
+  fetch("placeOrder.php", {
+    method: "POST", credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "success") {
+      localStorage.removeItem("cart");
+      localStorage.removeItem("pendingOrder");
+      document.getElementById("pageWrap").style.display  = "none";
+      document.getElementById("successBox").style.display = "flex";
+    } else {
+      showToast("❌ " + (data.message || "Error saving order"));
+      payBtn.disabled = false;
+      document.getElementById("payBtnText").innerText = tr.payBtn;
+    }
+  })
+  .catch(() => {
+    showToast("❌ Connection error. Please try again.");
+    payBtn.disabled = false;
+    document.getElementById("payBtnText").innerText = tr.payBtn;
+  });
+}
+
+function showToast(msg) {
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = document.createElement("div");
+  t.className = "toast"; t.innerText = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = "0"; t.style.transition = "opacity 0.4s"; setTimeout(() => t.remove(), 400); }, 3000);
+}
+function escapeHtml(str) {
+  if (!str) return "";
+  const d = document.createElement("div");
+  d.textContent = str; return d.innerHTML;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  applyTheme();
+  if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
+  document.body.dir = (lang === "ar") ? "rtl" : "ltr";
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+  set("orderTitle", tr.orderTitle);   set("payTitle", tr.payTitle);
+  set("nameLabel",  tr.nameLabel);    set("cardLabel", tr.cardLabel);
+  set("expLabel",   tr.expLabel);     set("methodTitle", tr.methodTitle);
+  set("payBtnText", tr.payBtn);
+  set("p1", tr.p1); set("p2", tr.p2); set("p3", tr.p3);
+  set("feat1", tr.feat1); set("feat2", tr.feat2); set("feat3", tr.feat3);
+  set("stepCart", tr.stepCart); set("stepDelivery", tr.stepDelivery); set("stepPay", tr.stepPay);
+  set("bcHome", tr.bcHome); set("bcCart", tr.bcCart); set("bcPay", tr.bcPay);
+  set("navHome", tr.navHome); set("navProducts", tr.navProducts);
+  set("successTitle", tr.successTitle); set("successText", tr.successText); set("backBtn", tr.backBtn);
+  const navHomeMob = document.getElementById("navHomeMobile");
+  const navProdMob = document.getElementById("navProductsMobile");
+  if (navHomeMob) navHomeMob.innerText = "🏠 " + tr.navHome;
+  if (navProdMob) navProdMob.innerText = "📦 " + tr.navProducts;
+  document.getElementById("name").placeholder = tr.placeholders.name;
+  document.getElementById("card").placeholder = tr.placeholders.card;
+  document.getElementById("exp").placeholder  = tr.placeholders.exp;
+  document.getElementById("cvv").placeholder  = tr.placeholders.cvv;
+
+  document.getElementById("card").addEventListener("input", function () {
+    let v = this.value.replace(/\D/g, "").substring(0, 16);
+    this.value = v.replace(/(.{4})/g, "$1 ").trim();
+  });
+  document.getElementById("exp").addEventListener("input", function () {
+    let v = this.value.replace(/\D/g, "").substring(0, 4);
+    if (v.length >= 3) v = v.slice(0, 2) + "/" + v.slice(2);
+    this.value = v;
+  });
+
+  const cart  = JSON.parse(localStorage.getItem("cart") || "[]");
+  const count = cart.reduce((s, i) => s + i.quantity, 0);
+  document.getElementById("cartCount").innerText = count;
+  const mob = document.getElementById("cartCountMobile");
+  if (mob) mob.innerText = count;
+
+  const order = JSON.parse(localStorage.getItem("pendingOrder") || "null");
+  if (order && order.cart) {
+    let total = 0;
+    order.cart.forEach(item => { total += item.price * item.quantity; });
+    document.getElementById("orderSummaryItems").innerHTML = `
+      <div class="order-item">👤 ${escapeHtml(order.name)}</div>
+      <div class="order-item">📞 ${escapeHtml(order.phone)}</div>
+      <div class="order-item">📍 ${escapeHtml(order.address)}</div>
+      <div class="order-item total">💰 Total: ${total.toLocaleString()} DA</div>
+    `;
+  }
+
+  // ✅ تحذير إذا المستخدم غير مسجل الدخول
+  const userData = JSON.parse(localStorage.getItem("user") || "{}");
+  if (!userData.id) {
+    showToast(tr.alertLogin);
+    setTimeout(() => window.location.href = 'login.html', 2000);
+  }
+});
+</script>
+</body>
+</html>
