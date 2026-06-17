@@ -2,6 +2,8 @@
 
 > Projet de fin d'études en Informatique — Application web e-commerce complète
 
+🌐 **Site en ligne : [smartmaket.free.nf](https://smartmaket.free.nf)**
+
 [![PHP](https://img.shields.io/badge/PHP-8.0-blue)](https://php.net)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-orange)](https://mysql.com)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6-yellow)](https://developer.mozilla.org/fr/docs/Web/JavaScript)
@@ -106,8 +108,9 @@ php -S localhost:8000
 
 **Nehal Chalabia** — Étudiante en Informatique  
 
-## Contact
 📧 Email: chalabianehal36@gmail.com 
+
+🌐 [Smart Market](https://smartmaket.free.nf)  
 
 🌐 GitHub: https://github.com/chalabianehal36-lgtm
 
