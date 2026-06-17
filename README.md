@@ -86,7 +86,7 @@ payments      (id, order_id, amount, status, payment_method, created_at)
 
 ```bash
 # 1. Cloner le dépôt
-git clone https://github.com/VOTRE_USERNAME/smart-market.git
+git clone https://github.com/chalabianehal36-lgtm/smart-market.git
 cd smart-market
 
 # 2. Configurer la base de données
