@@ -107,14 +107,10 @@ php -S localhost:8000
 ## 👩‍💻 Auteur
 
 **Nehal Chalabia** — Étudiante en Informatique  
-
-📧 Email: chalabianehal36@gmail.com 
-
-🌐 [Smart Market](https://smartmaket.free.nf)  
-
-🌐 GitHub: https://github.com/chalabianehal36-lgtm
-
-🚀 Project: https://github.com/chalabianehal36-lgtm/Smartmarket
+📧 [chalabianehal36@gmail.com](mailto:chalabianehal36@gmail.com)  
+🌐 [Site en ligne](https://smartmaket.free.nf)  
+🐙 [GitHub](https://github.com/chalabianehal36-lgtm)  
+🚀 [Dépôt du projet](https://github.com/chalabianehal36-lgtm/Smartmarket)
 ---
 
 © 2026 Smart Market | Projet Informatique
