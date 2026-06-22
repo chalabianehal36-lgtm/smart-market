@@ -1,6 +1,5 @@
 # 🛒 Smart Market — Plateforme E-Commerce
-
-> Projet de fin d'études en Informatique — Application web e-commerce complète
+> Projet de fin d'études — Licence en Informatique — Application web e-commerce complète
 
 🌐 **Site en ligne : [smartmaket.free.nf](https://smartmaket.free.nf)**
 
@@ -106,7 +105,7 @@ php -S localhost:8000
 
 ## 👩‍💻 Auteur
 
-**Nehal Chalabia** — Étudiante en Informatique  
+**Nehal Chalabia** — Étudiante en Licence Informatique
 📧 [chalabianehal36@gmail.com](mailto:chalabianehal36@gmail.com)  
 🌐 [Site en ligne](https://smartmaket.free.nf)  
 🐙 [GitHub](https://github.com/chalabianehal36-lgtm)  
