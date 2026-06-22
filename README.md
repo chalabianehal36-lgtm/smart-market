@@ -106,6 +106,7 @@ php -S localhost:8000
 ## 👩‍💻 Auteur
 
 **Nehal Chalabia** — Étudiante en Licence Informatique
+
 📧 [chalabianehal36@gmail.com](mailto:chalabianehal36@gmail.com)  
 🌐 [Site en ligne](https://smartmaket.free.nf)  
 🐙 [GitHub](https://github.com/chalabianehal36-lgtm)  
