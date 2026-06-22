@@ -68,7 +68,7 @@
       backdrop-filter: blur(8px); font-size: 13px; color: var(--text);
       font-family: 'Inter', sans-serif; transition: 0.3s; outline: none;
     }
-    .search-box input::placeholder { color: var(--text2); }
+    .search-box input::placeholder { color: var(--text2); opacity: 1; }
     .search-box input:focus {
       width: 240px; border-color: var(--c1);
       box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
@@ -107,7 +107,7 @@
     #authAreaMobile { width: 100%; display: flex; justify-content: center; }
     #authAreaMobile .nav-btn { width: 100%; justify-content: center; }
 
-    /* ===== HERO BANNER (like index) ===== */
+    /* ===== HERO BANNER ===== */
     .auth-hero {
       background: linear-gradient(135deg, var(--c1) 0%, #6366f1 50%, var(--c2) 100%);
       padding: 48px 32px 56px;
@@ -186,33 +186,52 @@
       to   { opacity:1; transform: translateY(0); }
     }
 
-    /* Input */
-    .input-box { position: relative; margin-bottom: 14px; }
+    /* ===== INPUT BOX — FIX PRINCIPAL ===== */
+    .input-box {
+      position: relative;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+    }
     .input-box label {
       display: block; font-size: 12px; font-weight: 600; color: var(--text2);
       text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px;
       margin-left: 4px;
     }
+    .input-box .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
     .input-box input {
-      width: 100%; padding: 12px 44px 12px 44px;
+      width: 100%;
+      padding: 12px 44px 12px 44px;
       border: 1.5px solid var(--border); border-radius: 50px;
       background: var(--surface2); backdrop-filter: blur(8px);
-      color: var(--text); font-size: 14px;
+      color: var(--text);
+      -webkit-text-fill-color: var(--text);
+      font-size: 14px;
       font-family: 'Inter', sans-serif; outline: none; transition: 0.3s;
     }
-    .input-box input::placeholder { color: var(--text2); }
+    .input-box input::placeholder {
+      color: var(--text2);
+      -webkit-text-fill-color: var(--text2);
+      opacity: 1;
+    }
     .input-box input:focus {
       border-color: var(--c1);
       box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
       background: var(--surface);
     }
     .input-box .ico {
-      position: absolute; left: 16px; bottom: 13px;
+      position: absolute; left: 16px;
       color: var(--text2); font-size: 14px; pointer-events: none;
+      z-index: 1;
     }
     .input-box .eye {
-      position: absolute; right: 16px; bottom: 13px;
+      position: absolute; right: 16px;
       cursor: pointer; color: var(--text2); font-size: 14px; transition: 0.2s;
+      z-index: 1;
     }
     .input-box .eye:hover { color: var(--c1); }
     .err {
@@ -241,15 +260,6 @@
     .submit-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 16px 36px rgba(59,130,246,0.45);
-    }
-
-    /* Divider */
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 20px 0; color: var(--text2); font-size: 12px;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
     }
 
     /* Switch link */
@@ -363,15 +373,19 @@
 
     <div class="input-box">
       <label id="lblLoginEmail">Email</label>
-      <i class="fa fa-envelope ico"></i>
-      <input type="email" id="loginEmail" placeholder="email@example.com">
+      <div class="input-wrap">
+        <i class="fa fa-envelope ico"></i>
+        <input type="email" id="loginEmail" placeholder="email@example.com">
+      </div>
     </div>
 
     <div class="input-box">
       <label id="lblLoginPwd">Mot de passe</label>
-      <i class="fa fa-lock ico"></i>
-      <input type="password" id="loginPassword" placeholder="••••••••">
-      <i class="fa fa-eye eye" id="eyeLogin" onclick="toggleEye('loginPassword','eyeLogin')"></i>
+      <div class="input-wrap">
+        <i class="fa fa-lock ico"></i>
+        <input type="password" id="loginPassword" placeholder="••••••••">
+        <i class="fa fa-eye eye" id="eyeLogin" onclick="toggleEye('loginPassword','eyeLogin')"></i>
+      </div>
     </div>
 
     <span id="loginErr" class="err"></span>
@@ -396,52 +410,66 @@
 
     <div class="input-box">
       <label id="lblNom">Nom</label>
-      <i class="fa fa-user ico"></i>
-      <input type="text" id="nom" placeholder="Votre nom">
+      <div class="input-wrap">
+        <i class="fa fa-user ico"></i>
+        <input type="text" id="nom" placeholder="Votre nom">
+      </div>
       <span id="errNom" class="err"></span>
     </div>
 
     <div class="input-box">
       <label id="lblPre">Prénom</label>
-      <i class="fa fa-user ico"></i>
-      <input type="text" id="pre" placeholder="Votre prénom">
+      <div class="input-wrap">
+        <i class="fa fa-user ico"></i>
+        <input type="text" id="pre" placeholder="Votre prénom">
+      </div>
       <span id="errPre" class="err"></span>
     </div>
 
     <div class="input-box">
       <label id="lblNum">Téléphone</label>
-      <i class="fa fa-phone ico"></i>
-      <input type="tel" id="num" placeholder="+213 ...">
+      <div class="input-wrap">
+        <i class="fa fa-phone ico"></i>
+        <input type="tel" id="num" placeholder="+213 ...">
+      </div>
       <span id="errNum" class="err"></span>
     </div>
 
     <div class="input-box">
       <label id="lblEmail">Email</label>
-      <i class="fa fa-envelope ico"></i>
-      <input type="email" id="email" placeholder="email@example.com">
+      <div class="input-wrap">
+        <i class="fa fa-envelope ico"></i>
+        <input type="email" id="email" placeholder="email@example.com">
+      </div>
       <span id="errEmail" class="err"></span>
     </div>
 
     <div class="input-box">
       <label id="lblAdd">Adresse</label>
-      <i class="fa fa-map-marker-alt ico"></i>
-      <input type="text" id="add" placeholder="Votre adresse">
+      <div class="input-wrap">
+        <i class="fa fa-map-marker-alt ico"></i>
+        <input type="text" id="add" placeholder="Votre adresse">
+      </div>
       <span id="errAdd" class="err"></span>
     </div>
 
     <div class="input-box">
       <label id="lblMdp">Mot de passe</label>
-      <i class="fa fa-lock ico"></i>
-      <input type="password" id="mdp" placeholder="••••••••">
-      <i class="fa fa-eye eye" id="eyeMdp" onclick="toggleEye('mdp','eyeMdp')"></i>
+      <div class="input-wrap">
+        <i class="fa fa-lock ico"></i>
+        <input type="password" id="mdp" placeholder="••••••••">
+        <i class="fa fa-eye eye" id="eyeMdp" onclick="toggleEye('mdp','eyeMdp')"></i>
+      </div>
       <span id="errMdp" class="err"></span>
     </div>
 
     <div class="input-box">
       <label id="lblConf">Confirmer le mot de passe</label>
-      <i class="fa fa-lock ico"></i>
-      <input type="password" id="confirmation" placeholder="••••••••">
-      <i class="fa fa-eye eye" id="eyeConf" onclick="toggleEye('confirmation','eyeConf')"></i>
+      <div class="input-wrap">
+        <i class="fa fa-lock ico"></i>
+        <input type="password" id="confirmation" placeholder="••••••••">
+        <i class="fa fa-eye eye" id="eyeConf" onclick="toggleEye('confirmation','eyeConf')"></i>
+      </div>
       <span id="errConf" class="err"></span>
     </div>
 
@@ -457,8 +485,8 @@
 
 </div>
 
-<!-- ===== FOOTER ===== -->
-<div class="footer">© 2026 <strong>Smart Market</strong> | Computer Science Project</div>
+<!-- ===== FOOTER ===== */-->
+<div class="footer">© 2026 <strong>Smart Market</strong> | Licence Informatique</div>
 
 <script>
 /* ===== TRANSLATIONS ===== */
