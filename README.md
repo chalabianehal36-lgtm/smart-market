@@ -110,7 +110,7 @@ php -S localhost:8000
 📧 [chalabianehal36@gmail.com](mailto:chalabianehal36@gmail.com)  
 🌐 [Site en ligne](https://smartmaket.free.nf)  
 🐙 [GitHub](https://github.com/chalabianehal36-lgtm)  
-🚀 [Dépôt du projet](https://github.com/chalabianehal36-lgtm/Smartmarket)
+🚀 [Dépôt du projet](https://github.com/chalabianehal36-lgtm/smart-market)
 ---
 
 © 2026 Smart Market | Projet Informatique
